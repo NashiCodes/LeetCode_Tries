@@ -2,74 +2,53 @@
 
 public class Trie
 {
-    private readonly Node _root;
+    public Node Root;
 
     public Trie()
     {
-        _root = new Node(false, '*');
+        Root = new Node();
     }
 
     public void Insert(string word)
     {
-        var p = _root;
+        var curNode = Root;
 
-        if (word.Length == 0) return;
-
-        if (p.Get(word[0]) == null)
+        foreach (var c in word)
         {
-            foreach (var i in word)
-            {
-                var node = new Node(false, i);
-                p.SetChar(i, node);
-                p = node;
-            }
+            if (!curNode.Children.ContainsKey(c)) curNode.Children.Add(c, new Node());
 
-            p.End = true;
+            curNode = curNode.Children[c];
         }
-        else
-        {
-            foreach (var i in word)
-                if (p.Get(i) == null)
-                {
-                    var node = new Node(false, i);
-                    p.SetChar(i, node);
-                    p = node;
-                }
-                else
-                {
-                    p = p.Get(i);
-                }
 
-            p!.End = true;
-        }
+        curNode.isWord = true;
     }
 
 
     public bool Search(string word)
     {
-        var p = _root;
-        if (word.Length == 0) return false;
-        if (p.Get(word[0]) == null) return false;
+        var curNode = Root;
 
-        foreach (var i in word)
-            if (p!.Get(i) == null)
-                return false;
-            else
-                p = p.Get(i);
-        return p!.End;
+        foreach (var c in word)
+        {
+            if (!curNode.Children.ContainsKey(c)) return false;
+
+            curNode = curNode.Children[c];
+        }
+
+        return curNode.isWord;
     }
 
     public bool StartsWith(string prefix)
     {
-        var p = _root;
-        if (prefix.Length == 0) return false;
-        if (p.Get(prefix[0]) == null) return false;
+        var curNode = Root;
 
-        foreach (var i in prefix)
-            if (p!.Get(i) == null)
-                return false;
-            else
-                p = p.Get(i);
+        foreach (var c in prefix)
+        {
+            if (!curNode.Children.ContainsKey(c)) return false;
+
+            curNode = curNode.Children[c];
+        }
+
         return true;
     }
 }
